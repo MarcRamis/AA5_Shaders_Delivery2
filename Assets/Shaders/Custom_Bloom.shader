@@ -17,32 +17,30 @@ Shader "Hidden/Custom/Bloom"
 
 	float _Threshold = 1;
 
-	float lightIntensityForBloom = 2550000000000.0f;
-
 	float4 Prefilter(float3 c, float2 uv)
 	{
 		float brightness = max(c.r, max(c.g, c.b));
 		float contribution = max(0, brightness - _Threshold);
 		contribution /= max(brightness, 0.00001);
-		if (brightness > lightIntensityForBloom)
+		if (length(c) > 15.0f)
 			return float4(c * contribution, 0);
 		else
 			return float4(0, 0, 0, 0);
 	}
 
-	float4 Check(float4 tex, float2 uv)
-	{
-		float3 tempTex = tex2D(_temporalTex, uv);
-		float color = max(tempTex.r, max(tempTex.g, tempTex.b));
-		if (color > 0.1f)
-		{
-			return tex;
-		}
-		else
-		{
-			return SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, uv);
-		}
-	}
+	//float4 Check(float4 tex, float2 uv)
+	//{
+	//	float3 tempTex = tex2D(_temporalTex, uv);
+	//	float color = max(tempTex.r, max(tempTex.g, tempTex.b));
+	//	if (color > 0.1f)
+	//	{
+	//		return tex;
+	//	}
+	//	else
+	//	{
+	//		return SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, uv);
+	//	}
+	//}
 
 	float4 Frag(VaryingsDefault i) : SV_Target
 	{
@@ -79,13 +77,13 @@ Shader "Hidden/Custom/Bloom"
 	for (float index2 = 0; index2 < _quantity; index2++)
 	{
 		// Get uv coordinate of sample
-		float2 uv = i.texcoord + float2(0, ((index2 / (_quantity - 1) - 0.5) * _intensity * invAspect));
+		float2 uv = i.texcoord + float2(0, ((index2 / (_quantity - 1) - 0.5) * (_intensity * 2) * invAspect));
 		// Add color at position to color
 		col += SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, uv);
 	}
 
 	// Divide the sum of values by the amount of samples
-	col = col / (_quantity);
+	col = col / (_quantity );
 	return col;
 	
 	}
@@ -102,7 +100,8 @@ Shader "Hidden/Custom/Bloom"
 			//col += SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, uv);
 			col += tex2D(_temporalTex, uv);
 		}
-		return Prefilter(col, uv);
+		//return Prefilter(col, uv);
+		return col;
 		//col = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, uv) * float4(1, 1, 1, 1) * 0.5f;
 
 
@@ -113,11 +112,10 @@ Shader "Hidden/Custom/Bloom"
 	{
 		float3 c = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.texcoord);
 		float brightness = max(c.r, max(c.g, c.b));
-		float contribution = max(0, brightness - _Threshold);
-		contribution /= max(brightness, 0.00001);
-		if (brightness > lightIntensityForBloom)
-		{
-			return float4(c * contribution, 0);
+		
+		if (length(c) > 15.0f)
+		{			
+			return float4(c, 0);
 		}
 		else
 		{
@@ -133,17 +131,9 @@ Shader "Hidden/Custom/Bloom"
 	{
 		float4 originalTex = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.texcoord);
 		float4 bloomTex = tex2D(_finalBloom, i.texcoord);
-
-		float3 c = tex2D(_finalBloom, i.texcoord);
-		float brightness = max(c.r, max(c.g, c.b));
-		if (brightness > lightIntensityForBloom)
-		{
+		
 			return   bloomTex + originalTex;
-		}
-		else
-		{
-			return SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.texcoord);
-		}
+		
 		
 	}
 

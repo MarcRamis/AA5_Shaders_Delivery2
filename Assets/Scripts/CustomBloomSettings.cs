@@ -31,35 +31,41 @@ public class CustomBloom : PostProcessEffectRenderer<CustomBloomSettings>//<T> i
         sheet.properties.SetFloat("_quantity", settings.steps);
 
         //Temporal Texture
-        //var preTexture = RenderTexture.GetTemporary(context.width, context.height);
-        //var temporaryTexture = RenderTexture.GetTemporary(context.width, context.height);
-        //var bloomTex = RenderTexture.GetTemporary(context.width, context.height);
-        //var blurTexture = RenderTexture.GetTemporary(context.width, context.height);
+        var preTexture = RenderTexture.GetTemporary(context.width, context.height);
+        var temporaryTexture = RenderTexture.GetTemporary(context.width, context.height);
+        var bloomTex = RenderTexture.GetTemporary(context.width, context.height);
+        var blurTexture = RenderTexture.GetTemporary(context.width, context.height);
 
         //We render the scene as a full screen triangle applying the specified shader
-        context.command.BlitFullscreenTriangle(context.source, context.destination /*preTexture*/, sheet, 3);
 
-        //sheet.properties.SetTexture("_temporalTex", preTexture);
+        //Take all pixels bright
+        context.command.BlitFullscreenTriangle(context.source, preTexture, sheet, 3);
 
-        //context.command.BlitFullscreenTriangle(context.source, context.destination/*temporaryTexture*/, sheet, 2);
-        //
-        //context.command.BlitFullscreenTriangle(temporaryTexture, blurTexture, sheet, 0);
-        //
-        //
-        //
-        //
-        //context.command.BlitFullscreenTriangle(blurTexture, bloomTex, sheet, 1);
-        //
-        //sheet.properties.SetTexture("_finalBloom", bloomTex);
-        //
-        //context.command.BlitFullscreenTriangle(context.source, context.destination, sheet, 4);
-        //
-        //RenderTexture.ReleaseTemporary(blurTexture);
-        //
-        //RenderTexture.ReleaseTemporary(temporaryTexture);
-        //
-        //RenderTexture.ReleaseTemporary(bloomTex);
-        //
+        sheet.properties.SetTexture("_temporalTex", preTexture);
+
+        //Effect Saturate
+        context.command.BlitFullscreenTriangle(context.source, temporaryTexture, sheet, 2);
+
+        
+
+        //Effect Blur
+        context.command.BlitFullscreenTriangle(temporaryTexture,  blurTexture, sheet, 0);
+        
+        context.command.BlitFullscreenTriangle(blurTexture, bloomTex, sheet, 1);
+        
+        sheet.properties.SetTexture("_finalBloom", bloomTex);
+        
+        //Sum effect Bloom with normal texture
+        context.command.BlitFullscreenTriangle(context.source, context.destination, sheet, 4);
+
+        RenderTexture.ReleaseTemporary(preTexture);
+
+        RenderTexture.ReleaseTemporary(blurTexture);
+        
+        RenderTexture.ReleaseTemporary(temporaryTexture);
+        
+        RenderTexture.ReleaseTemporary(bloomTex);
+        
         //context.command.BlitFullscreenTriangle(blurTexture, context.destination, sheet, 2);
         //
         //blurTexture = RenderTexture.GetTemporary(context.width, context.height);
