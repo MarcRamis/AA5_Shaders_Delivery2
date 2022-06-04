@@ -28,20 +28,7 @@ Shader "Hidden/Custom/Bloom"
 			return float4(0, 0, 0, 0);
 	}
 
-	//float4 Check(float4 tex, float2 uv)
-	//{
-	//	float3 tempTex = tex2D(_temporalTex, uv);
-	//	float color = max(tempTex.r, max(tempTex.g, tempTex.b));
-	//	if (color > 0.1f)
-	//	{
-	//		return tex;
-	//	}
-	//	else
-	//	{
-	//		return SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, uv);
-	//	}
-	//}
-
+	
 	float4 Frag(VaryingsDefault i) : SV_Target
 	{
 		//calculate aspect ratio
@@ -97,21 +84,15 @@ Shader "Hidden/Custom/Bloom"
 		
 		for (int i = 0; i < 1; i++)
 		{
-			//col += SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, uv);
 			col += tex2D(_temporalTex, uv);
 		}
-		//return Prefilter(col, uv);
+		
 		return col;
-		//col = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, uv) * float4(1, 1, 1, 1) * 0.5f;
-
-
-
 	}
 
 		float4 PreFrag(VaryingsDefault i) : SV_Target
 	{
 		float3 c = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.texcoord);
-		float brightness = max(c.r, max(c.g, c.b));
 		
 		if (length(c) > 15.0f)
 		{			
@@ -121,10 +102,6 @@ Shader "Hidden/Custom/Bloom"
 		{
 			return float4(0,0,0,0);
 		}
-
-
-
-
 	}
 
 		float4 FinalFrag(VaryingsDefault i) : SV_Target
@@ -133,8 +110,6 @@ Shader "Hidden/Custom/Bloom"
 		float4 bloomTex = tex2D(_finalBloom, i.texcoord);
 		
 			return   bloomTex + originalTex;
-		
-		
 	}
 
 		ENDHLSL
@@ -177,22 +152,7 @@ Shader "Hidden/Custom/Bloom"
 				#pragma fragment FinalFrag
 			ENDHLSL
 		}
-			//Pass
-			//{
-			//	Blend One One
-			//
-			//	CGPROGRAM
-			//		#pragma vertex VertDefault
-			//		#pragma fragment FragmentProgram
-			//	ENDCG
-			//}
-			//Pass
-			//{
-			//	CGPROGRAM
-			//	#pragma vertex VertDefault
-			//	#pragma fragment FragmentProgram2
-			//	ENDCG
-			//}
+			
 	}
 }
 
