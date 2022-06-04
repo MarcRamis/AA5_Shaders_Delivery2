@@ -3037,6 +3037,12 @@ MonoBehaviour:
   m_AfterStackBundles:
   - assemblyQualifiedName: CustomBloomSettings, Assembly-CSharp, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
+  - assemblyQualifiedName: CustomBlurSettings, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  - assemblyQualifiedName: CustomPostproPixelateSettings, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  - assemblyQualifiedName: CustomPostproVignetteSettings, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!20 &836432384
 Camera:
   m_ObjectHideFlags: 0

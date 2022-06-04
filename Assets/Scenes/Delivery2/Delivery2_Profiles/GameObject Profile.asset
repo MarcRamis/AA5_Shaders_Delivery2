@@ -49,6 +49,28 @@ MonoBehaviour:
   quality:
     overrideState: 1
     value: 3
+--- !u!114 &-740109266481746667
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: def20ebb7851cef46946e726764bbb37, type: 3}
+  m_Name: CustomBlurSettings
+  m_EditorClassIdentifier: 
+  active: 1
+  enabled:
+    overrideState: 1
+    value: 0
+  blurIntensity:
+    overrideState: 1
+    value: 0.034
+  steps:
+    overrideState: 1
+    value: 20
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -64,6 +86,9 @@ MonoBehaviour:
   settings:
   - {fileID: -5815581481062316947}
   - {fileID: 3414469970252301893}
+  - {fileID: -740109266481746667}
+  - {fileID: 3874015939189547367}
+  - {fileID: 5105450094875837311}
 --- !u!114 &3414469970252301893
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -86,3 +111,50 @@ MonoBehaviour:
   steps:
     overrideState: 0
     value: 50
+--- !u!114 &3874015939189547367
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e77998e9311e284da33db092f4e6a30, type: 3}
+  m_Name: CustomPostproVignetteSettings
+  m_EditorClassIdentifier: 
+  active: 1
+  enabled:
+    overrideState: 1
+    value: 0
+  framePos:
+    overrideState: 1
+    value: {x: 1, y: 1}
+  size:
+    overrideState: 1
+    value: 1
+  falloff:
+    overrideState: 1
+    value: 4
+  screenColor:
+    overrideState: 1
+    value: {r: 0, g: 0, b: 0, a: 1}
+--- !u!114 &5105450094875837311
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fdd888346a5bfb0458493fa0bf7ee764, type: 3}
+  m_Name: CustomPostproPixelateSettings
+  m_EditorClassIdentifier: 
+  active: 1
+  enabled:
+    overrideState: 1
+    value: 0
+  pixelSize:
+    overrideState: 1
+    value: 5
