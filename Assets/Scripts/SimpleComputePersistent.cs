@@ -41,6 +41,7 @@ public class SimpleComputePersistent : MonoBehaviour
     public float cohesionForce = 0.5f;
     public float separationForce = 0.5f;
     public float alignForce = 0.5f;
+    public float rotationSpeed = 100f;
 
     // Start is called before the first frame update
     void Start()
@@ -66,7 +67,6 @@ public class SimpleComputePersistent : MonoBehaviour
             data[i].target = startTarget.transform.position;
             data[i].position = objects[i].transform.position;
             data[i].velocity = Vector3.zero;
-
             data[i].force = Seek(i, data[i].target);
         }
         //We create the buffer to pass data to the GPU
@@ -105,8 +105,10 @@ public class SimpleComputePersistent : MonoBehaviour
 
             data[i].force = steeringForce;
 
-            // Update gameobjects positions
+            // Update gameobjects 
             objects[i].transform.position = data[i].position;
+            Quaternion orientation = Quaternion.LookRotation(data[i].velocity, Vector3.up);
+            objects[i].transform.rotation = Quaternion.RotateTowards(objects[i].transform.rotation, orientation, 100f * Time.deltaTime);
         }
 
         dataBuffer.SetData(data);
