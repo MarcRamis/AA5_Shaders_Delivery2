@@ -78,9 +78,9 @@ Material:
     - _fresnelIntensity: 1
     - _geometryCofficient: 1
     - _pointLightIntensity: 1
-    - _roughness: 0.081
+    - _roughness: 0.196
     - _scecularExp: 2
-    - _spotLightIntensity: 1
+    - _spotLightIntensity: 0.5
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
@@ -89,8 +89,8 @@ Material:
     - _directionalLightDir: {r: -0.26775646, g: 0.8896556, b: -0.36989105, a: 0}
     - _objectColor: {r: 0.6698113, g: 0.6698113, b: 0.6698113, a: 1}
     - _pointLightColor: {r: 1, g: 1, b: 1, a: 0}
-    - _pointLightPos: {r: -13.603349, g: 5.281643, b: 0.41789246, a: 0}
+    - _pointLightPos: {r: -13.749349, g: 4.775643, b: 0.41789246, a: 0}
     - _spotLightColor: {r: 1, g: 1, b: 1, a: 1}
-    - _spotLightDir: {r: -0, g: -0, b: -1, a: 0}
-    - _spotLightPos: {r: 5.190651, g: 4.071643, b: 7.9188924, a: 0}
+    - _spotLightDir: {r: -0, g: 1, b: -0, a: 0}
+    - _spotLightPos: {r: -3.6093483, g: 6.3166428, b: -3.2641077, a: 0}
   m_BuildTextureStacks: []

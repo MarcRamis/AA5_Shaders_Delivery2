@@ -331,7 +331,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 48718713}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 29.82, y: 1.156, z: -4.567}
+  m_LocalPosition: {x: 21.02, y: 3.401, z: -15.75}
   m_LocalScale: {x: 0.23616, y: 0.23616, z: 0.23616}
   m_Children: []
   m_Father: {fileID: 1810462284}
@@ -350,9 +350,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 2
-  direction: {x: 0, y: 0, z: 1}
+  direction: {x: 0, y: -1, z: 0}
   color: {r: 1, g: 1, b: 1, a: 1}
-  intensity: 10
+  intensity: 1
   mats:
   - {fileID: 2100000, guid: c22f92a0bf5e4df44a7948380e70322e, type: 2}
   - {fileID: 2100000, guid: b9adfe09731a18b49b7162205bea8fb7, type: 2}
@@ -3037,6 +3037,12 @@ MonoBehaviour:
   m_AfterStackBundles:
   - assemblyQualifiedName: CustomBloomSettings, Assembly-CSharp, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
+  - assemblyQualifiedName: CustomBlurSettings, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  - assemblyQualifiedName: CustomPostproPixelateSettings, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  - assemblyQualifiedName: CustomPostproVignetteSettings, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!20 &836432384
 Camera:
   m_ObjectHideFlags: 0
@@ -3889,7 +3895,7 @@ PrefabInstance:
     - target: {fileID: 2300000, guid: 6c658f9953e43a8418fc3bb3b0bad4f2, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 10302, guid: 0000000000000000f000000000000000, type: 0}
+      objectReference: {fileID: 2100000, guid: a8c9dcf23bf4c86459cf731962720631, type: 2}
     - target: {fileID: 2300000, guid: 6c658f9953e43a8418fc3bb3b0bad4f2, type: 3}
       propertyPath: m_Materials.Array.data[1]
       value: 
@@ -3897,11 +3903,11 @@ PrefabInstance:
     - target: {fileID: 2300000, guid: 6c658f9953e43a8418fc3bb3b0bad4f2, type: 3}
       propertyPath: m_Materials.Array.data[2]
       value: 
-      objectReference: {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+      objectReference: {fileID: 2100000, guid: 9fa3c76801d5782409ea67d1a49b8a18, type: 2}
     - target: {fileID: 2300000, guid: 6c658f9953e43a8418fc3bb3b0bad4f2, type: 3}
       propertyPath: m_Materials.Array.data[3]
       value: 
-      objectReference: {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+      objectReference: {fileID: 2100000, guid: a8c9dcf23bf4c86459cf731962720631, type: 2}
     - target: {fileID: 2300000, guid: 6c658f9953e43a8418fc3bb3b0bad4f2, type: 3}
       propertyPath: m_Materials.Array.data[4]
       value: 
@@ -6236,7 +6242,7 @@ PrefabInstance:
     - target: {fileID: 2300000, guid: b794cfa5158947e46bc60a458dc33d5a, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+      objectReference: {fileID: 2100000, guid: a8c9dcf23bf4c86459cf731962720631, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b794cfa5158947e46bc60a458dc33d5a, type: 3}
 --- !u!1 &1652151359
@@ -7756,7 +7762,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1965582917}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 11.026, y: 2.366, z: -12.068}
+  m_LocalPosition: {x: 10.88, y: 1.86, z: -12.068}
   m_LocalScale: {x: 0.12494712, y: 0.12494712, z: 0.12494712}
   m_Children: []
   m_Father: {fileID: 1810462284}

@@ -136,8 +136,10 @@ Shader "Unlit/PBR"
 
 				brdfComp = (fresnel * geometry * distribution) / (4 * ((dot(i.worldNormal, lightDir)) * (dot(i.worldNormal, viewVec))));
 
-				finalColor += clamp(float4(_pointLightIntensity * (difuseComp + brdfComp), 1), 0, 1);
-				//return float4(distribution, 1);
+				//finalColor = ambientComp;
+
+				finalColor += clamp(float4(_directionalLightIntensity * (difuseComp + brdfComp), 1), 0, 1);
+				//return float4(difuseComp, 1);
 #endif
 #if POINT_LIGHT_ON
 
@@ -146,10 +148,12 @@ Shader "Unlit/PBR"
 				lightDir = _pointLightPos - i.wPos;
 				float lightDist = length(lightDir);
 				lightDir = lightDir / lightDist;
+				float attenuation = 1.0 / (1.0f + 0.09f * lightDist + 0.032f * (lightDist * lightDist));
 				//lightDir *= 4 * 3.14;
 
 				//Diffuse componenet
 				difuseComp = lightColor * _diffuseInt * clamp(dot(lightDir, i.worldNormal), 0, 1) / lightDist;
+				difuseComp *= attenuation;
 
 				// View vector & half vector
 				viewVec = normalize(_WorldSpaceCameraPos - i.wPos);
@@ -167,6 +171,9 @@ Shader "Unlit/PBR"
 				// BRDF Function
 				brdfComp = (fresnel * geometry * distribution) / 4 * ((dot(i.worldNormal, lightDir)) * (dot(i.worldNormal, viewVec))) / lightDist;
 
+				brdfComp *= attenuation;
+				//finalColor = ambientComp * attenuation;
+
 				finalColor += clamp(float4(_pointLightIntensity * (difuseComp + brdfComp),1), 0, 1);
 				//return float4(distribution, 1);
 
@@ -178,6 +185,7 @@ Shader "Unlit/PBR"
 				lightDir = _spotLightPos - i.wPos;
 				float lightDist2 = length(lightDir);
 				lightDir = lightDir / lightDist2;
+				attenuation = 10.0 / (1.0f + 0.09f * lightDist + 0.032f * (lightDist * lightDist));
 				//lightDir *= 4 * 3.14;
 
 				float theta = dot(lightDir, normalize(-_spotLightDir));
@@ -187,7 +195,7 @@ Shader "Unlit/PBR"
 					// do lighting calculations
 					//Diffuse componenet
 					difuseComp = lightColor * _diffuseInt * clamp(dot(lightDir, i.worldNormal), 0, 1) / lightDist2;
-
+					difuseComp *= attenuation;
 					// View vector & half vector
 					viewVec = normalize(_WorldSpaceCameraPos - i.wPos);
 					halfVec = normalize(viewVec + lightDir);
@@ -203,8 +211,10 @@ Shader "Unlit/PBR"
 
 					// BRDF Function
 					brdfComp = (fresnel * geometry * distribution) / 4 * ((dot(i.worldNormal, lightDir)) * (dot(i.worldNormal, viewVec))) / lightDist2;
+					brdfComp *= attenuation;
+					//finalColor = ambientComp;
 
-					finalColor += clamp(float4(_pointLightIntensity * (difuseComp + brdfComp), 1), 0, 1);
+					finalColor += clamp(float4(_spotLightIntensity * (difuseComp + brdfComp), 1), 0, 1);
 				}
 				else
 				{
