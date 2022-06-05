@@ -84,7 +84,7 @@ Material:
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _ambientColor: {r: 0.5176471, g: 0.90588236, b: 1, a: 1}
+    - _ambientColor: {r: 1, g: 1, b: 1, a: 1}
     - _directionalLightColor: {r: 1, g: 0.8666667, b: 0.7411765, a: 1}
     - _directionalLightDir: {r: -0.26775655, g: 0.88965565, b: -0.36989102, a: 0}
     - _objectColor: {r: 0.6698113, g: 0.6698113, b: 0.6698113, a: 1}

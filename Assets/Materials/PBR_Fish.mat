@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: PBR-Sand
+  m_Name: PBR_Fish
   m_Shader: {fileID: 4800000, guid: f687893b47fd42d4aa16a912acc3358f, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
@@ -75,19 +75,19 @@ Material:
     - _ambientInt: 0.25
     - _diffuseInt: 1
     - _directionalLightIntensity: 1
-    - _fresnelIntensity: 1
+    - _fresnelIntensity: 0.5
     - _geometryCofficient: 1
     - _pointLightIntensity: 1
-    - _roughness: 0.793
+    - _roughness: 0.5
     - _scecularExp: 2
-    - _spotLightIntensity: 0.5
+    - _spotLightIntensity: 1
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _ambientColor: {r: 1, g: 1, b: 1, a: 1}
     - _directionalLightColor: {r: 1, g: 0.8666667, b: 0.7411765, a: 1}
     - _directionalLightDir: {r: -0.26775655, g: 0.88965565, b: -0.36989102, a: 0}
-    - _objectColor: {r: 1, g: 0.7100831, b: 0, a: 1}
+    - _objectColor: {r: 0.11129405, g: 0.38679248, b: 0.35772616, a: 1}
     - _pointLightColor: {r: 1, g: 1, b: 1, a: 0}
     - _pointLightPos: {r: -13.749349, g: 4.775643, b: 0.41789246, a: 0}
     - _spotLightColor: {r: 1, g: 1, b: 1, a: 1}
