@@ -42,6 +42,8 @@ public class SimpleComputePersistent : MonoBehaviour
     public float separationForce = 0.5f;
     public float alignForce = 0.5f;
     public float rotationSpeed = 100f;
+    public float neighbourRadius = 5f;
+    public bool drawRadius = false;
 
     // Start is called before the first frame update
     void Start()
@@ -110,7 +112,7 @@ public class SimpleComputePersistent : MonoBehaviour
             Quaternion orientation = Quaternion.LookRotation(data[i].velocity, Vector3.up);
             objects[i].transform.rotation = Quaternion.RotateTowards(objects[i].transform.rotation, orientation, 100f * Time.deltaTime);
         }
-
+        
         dataBuffer.SetData(data);
         //dataBuffer.Release();
     }
@@ -216,4 +218,15 @@ public class SimpleComputePersistent : MonoBehaviour
         return steeringForce;
     }
 
+    private void OnDrawGizmos()
+    {
+        if (drawRadius)
+        {
+            for (int i = 0; i < objects.Count; i++)
+            {
+                Gizmos.color = Color.green;
+                Gizmos.DrawWireSphere(objects[i].transform.position, neighbourRadius);
+            }
+        }
+    }
 }
