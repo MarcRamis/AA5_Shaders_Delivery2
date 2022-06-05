@@ -1407,7 +1407,7 @@ MonoBehaviour:
   - {fileID: 1508051691}
   startTarget: {fileID: 1659491020}
   minVelocity: 0.1
-  maxVelocity: 0.53
+  maxVelocity: 0.58
 --- !u!4 &317820297
 Transform:
   m_ObjectHideFlags: 0

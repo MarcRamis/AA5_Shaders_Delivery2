@@ -7,11 +7,14 @@ public struct GameObjectInfo
     public Vector3 position;
     public Vector3 velocity;
     public Vector3 target;
+    public Vector3 cohesion;
+    public Vector3 alignment;
+    public Vector3 separation;
     public static int Size
     {
         get
         {
-            return sizeof(float) * 3 * 3;
+            return sizeof(float) * 3 * 6;
         }
     }
 }
@@ -29,6 +32,7 @@ public class SimpleComputePersistent : MonoBehaviour
     public Transform[] targets;
     public Transform startTarget;
     public float minVelocity = 0.1f;
+    int[] ids;
     [Range(0.1f,10)] public float maxVelocity;
     float[] randomVelocities;
     
@@ -52,7 +56,8 @@ public class SimpleComputePersistent : MonoBehaviour
         int numObjs = objects.Count;
         data = new GameObjectInfo[numObjs];
         randomVelocities = new float[numObjs];
-
+        ids = new int[numObjs];
+        
         for (int i = 0; i < numObjs; i++)
         {
             randomVelocities[i] = Random.Range(minVelocity, maxVelocity);
@@ -60,6 +65,8 @@ public class SimpleComputePersistent : MonoBehaviour
             data[i].target = startTarget.transform.position;
             data[i].velocity = new Vector3(1,1,1) * randomVelocities[i];
             data[i].position = objects[i].transform.position;
+
+            ids[i] = i;
         }
         //We create the buffer to pass data to the GPU
         //The constructor asks for an ammount of objects for the buffer and the size of each object in bytes
@@ -124,4 +131,24 @@ public class SimpleComputePersistent : MonoBehaviour
     {
         return ownPos - newPos;
     }
+
+    public Vector3 Cohesion()
+    {
+        Vector3 averageVector = Vector3.zero;
+
+        return Vector3.zero;
+    }
+    public Vector3 Separation()
+    {
+        Vector3 averageVector = Vector3.zero;
+
+        return Vector3.zero;
+    }
+    public Vector3 Alignment()
+    {
+        Vector3 averageVector = Vector3.zero;
+
+        return Vector3.zero;
+    }
+
 }

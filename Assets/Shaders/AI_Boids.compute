@@ -13,6 +13,9 @@ struct GameObjInf {
 	float3 position;
 	float3 velocity;
 	float3 target;
+	float3 cohesion;
+	float3 alignment;
+	float3 separation;
 };
 //StrucuredBuffer made up of our own struct objects
 RWStructuredBuffer<GameObjInf> CoolerResult;
