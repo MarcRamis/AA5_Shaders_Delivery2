@@ -96,7 +96,7 @@ public class SimpleComputePersistent : MonoBehaviour
             {
                 data[i].target = CalculateNewTarget(data[i].target);
             }
-
+            
             Vector3 steeringForce = Vector3.zero;
             steeringForce += Seek(i, data[i].target) * seekForce;
             steeringForce += Cohesion(i) * cohesionForce;
