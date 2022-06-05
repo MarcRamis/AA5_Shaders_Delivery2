@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -41,9 +40,12 @@ public class SimpleComputePersistent : MonoBehaviour
     public float cohesionForce = 0.5f;
     public float separationForce = 0.5f;
     public float alignForce = 0.5f;
+    public float obstacleAvoidanceForce = 20f;
     public float rotationSpeed = 100f;
     public float neighbourRadius = 5f;
-    public bool drawRadius = false;
+    public float rayLength = 5f;
+    public float sensorSidesOffset = 10f;
+    public bool drawGizmos = false;
 
     // Start is called before the first frame update
     void Start()
@@ -77,7 +79,7 @@ public class SimpleComputePersistent : MonoBehaviour
         //We load the data into the buffer
         dataBuffer.SetData(data);
     }
-    
+
     // Update is called once per frame
     void Update()
     {
@@ -86,7 +88,7 @@ public class SimpleComputePersistent : MonoBehaviour
         int kernelHandle = shader.FindKernel("CSMain");
         shader.SetBuffer(kernelHandle, "CoolerResult", dataBuffer);
         shader.SetFloat("deltaTime", Time.deltaTime);
-        
+
         int threadGroups = Mathf.CeilToInt(numObjs / 128.0f);
 
         shader.Dispatch(kernelHandle, threadGroups, 1, 1);
@@ -98,25 +100,26 @@ public class SimpleComputePersistent : MonoBehaviour
             {
                 data[i].target = CalculateNewTarget(data[i].target);
             }
-            
+
             Vector3 steeringForce = Vector3.zero;
             steeringForce += Seek(i, data[i].target) * seekForce;
             steeringForce += Cohesion(i) * cohesionForce;
             steeringForce += Separation(i) * separationForce;
             steeringForce += Alignment(i) * alignForce;
+            steeringForce += ObstacleAvoidance(i) * obstacleAvoidanceForce;
 
             data[i].force = steeringForce;
 
             // Update gameobjects 
             objects[i].transform.position = data[i].position;
             Quaternion orientation = Quaternion.LookRotation(data[i].velocity, Vector3.up);
-            objects[i].transform.rotation = Quaternion.RotateTowards(objects[i].transform.rotation, orientation, 100f * Time.deltaTime);
+            objects[i].transform.rotation = Quaternion.RotateTowards(objects[i].transform.rotation, orientation, rotationSpeed * Time.deltaTime);
         }
-        
+
         dataBuffer.SetData(data);
         //dataBuffer.Release();
     }
-    
+
     private Vector3 CalculateNewTarget(Vector3 currentTarget)
     {
         if (currentTarget == targets[targets.Length - 1].position) return targets[0].transform.position;
@@ -128,10 +131,10 @@ public class SimpleComputePersistent : MonoBehaviour
                 return targets[i + 1].transform.position;
             }
         }
-        
+
         return startTarget.transform.position;
     }
-    
+
     public void OnDestroy()
     {
         foreach (Transform child in transform)
@@ -159,7 +162,7 @@ public class SimpleComputePersistent : MonoBehaviour
         }
         cohesionVector /= objects.Count - 1;
         cohesionVector -= data[id].position;
-        
+
         cohesionVector.Normalize();
         cohesionVector *= randomVelocities[id];
         Vector3 steeringForce = cohesionVector - data[id].velocity;
@@ -217,15 +220,48 @@ public class SimpleComputePersistent : MonoBehaviour
 
         return steeringForce;
     }
+    public Vector3 ObstacleAvoidance(int id)
+    {
+        Vector3 normal = Vector3.zero;
+
+        // Looking forward
+        if (Physics.Raycast(data[id].position, data[id].velocity.normalized, rayLength))
+        {
+            int randomSide = Random.Range(0,10);
+            if (randomSide < 5)
+            {
+                normal += (objects[id].transform.TransformDirection(Vector3.right));
+            }
+            else
+            {
+                normal += (objects[id].transform.TransformDirection(Vector3.left));
+            }
+        }
+        
+        // Looking down/diagonal
+        if (Physics.Raycast(data[id].position, (data[id].velocity + (objects[id].transform.TransformDirection(Vector3.down).normalized)), rayLength))
+        {
+            normal += (objects[id].transform.TransformDirection(Vector3.up));
+        }
+
+
+        return normal;
+    }
 
     private void OnDrawGizmos()
     {
-        if (drawRadius)
+        if (drawGizmos)
         {
             for (int i = 0; i < objects.Count; i++)
             {
                 Gizmos.color = Color.green;
-                Gizmos.DrawWireSphere(objects[i].transform.position, neighbourRadius);
+                Gizmos.DrawWireSphere(data[i].position, neighbourRadius);
+                
+                Gizmos.color = Color.red;
+                Gizmos.DrawRay(data[i].position, data[i].velocity.normalized * rayLength);
+                
+                Gizmos.color = Color.magenta;
+                Gizmos.DrawRay(data[i].position, (data[i].velocity + (objects[i].transform.TransformDirection(Vector3.down)).normalized * rayLength));
             }
         }
     }
