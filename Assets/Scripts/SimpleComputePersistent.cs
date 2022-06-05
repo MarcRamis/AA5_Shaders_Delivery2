@@ -6,6 +6,8 @@ public struct GameObjectInfo
 {
     public Vector3 position;
     public Vector3 velocity;
+    public Vector3 speed;
+    public Vector3 acceleration;
     public Vector3 target;
     public Vector3 cohesion;
     public Vector3 alignment;
@@ -14,7 +16,7 @@ public struct GameObjectInfo
     {
         get
         {
-            return sizeof(float) * 3 * 6;
+            return sizeof(float) * 3 * 8;
         }
     }
 }
@@ -32,7 +34,6 @@ public class SimpleComputePersistent : MonoBehaviour
     public Transform[] targets;
     public Transform startTarget;
     public float minVelocity = 0.1f;
-    int[] ids;
     [Range(0.1f,10)] public float maxVelocity;
     float[] randomVelocities;
     
@@ -56,17 +57,12 @@ public class SimpleComputePersistent : MonoBehaviour
         int numObjs = objects.Count;
         data = new GameObjectInfo[numObjs];
         randomVelocities = new float[numObjs];
-        ids = new int[numObjs];
-        
         for (int i = 0; i < numObjs; i++)
         {
             randomVelocities[i] = Random.Range(minVelocity, maxVelocity);
-            
+            data[i].speed = Vector3.one * randomVelocities[i];
             data[i].target = startTarget.transform.position;
-            data[i].velocity = new Vector3(1,1,1) * randomVelocities[i];
             data[i].position = objects[i].transform.position;
-
-            ids[i] = i;
         }
         //We create the buffer to pass data to the GPU
         //The constructor asks for an ammount of objects for the buffer and the size of each object in bytes
@@ -94,12 +90,12 @@ public class SimpleComputePersistent : MonoBehaviour
             if (Vector3.Distance(data[i].position, data[i].target) < 3)
             {
                 data[i].target = CalculateNewTarget(data[i].target);
-                dataBuffer.SetData(data);
             }
 
             objects[i].transform.position = data[i].position;
         }
 
+        dataBuffer.SetData(data);
         //dataBuffer.Release();
     }
 
@@ -131,24 +127,77 @@ public class SimpleComputePersistent : MonoBehaviour
     {
         return ownPos - newPos;
     }
-
-    public Vector3 Cohesion()
+    
+    public Vector3 Cohesion(int id)
     {
-        Vector3 averageVector = Vector3.zero;
+        Vector3 cohesionVector = Vector3.zero;
 
-        return Vector3.zero;
+        for (int i = 0; i < objects.Count; i++)
+        {
+            if (i != id)
+            {
+                cohesionVector += data[i].position;
+            }
+        }
+        cohesionVector /= objects.Count - 1;
+        cohesionVector -= data[id].position;
+
+        // Se podria normalizar cohesionVector
+        cohesionVector *= randomVelocities[id];
+        Vector3 steeringForce = cohesionVector - data[id].velocity;
+        // Se podria normalizar steeringForce
+
+        return steeringForce;
     }
-    public Vector3 Separation()
+    public Vector3 Separation(int id)
     {
-        Vector3 averageVector = Vector3.zero;
+        Vector3 separateVector = Vector3.zero;
 
-        return Vector3.zero;
+        for (int i = 0; i < objects.Count; i++)
+        {
+            if (i != id)
+            {
+                separateVector += data[id].position - data[i].position;
+            }
+        }
+        separateVector /= objects.Count - 1;
+
+        // Se podria normalizar separateVector
+        separateVector *= randomVelocities[id];
+        Vector3 steeringForce = separateVector - data[id].velocity;
+        // Se podria normalizar steeringForce
+
+        return steeringForce;
     }
-    public Vector3 Alignment()
+    public Vector3 Alignment(int id)
     {
-        Vector3 averageVector = Vector3.zero;
+        Vector3 alignVector = Vector3.zero;
 
-        return Vector3.zero;
+        for (int i = 0; i < objects.Count; i++)
+        {
+            if (i != id)
+            {
+                alignVector += data[i].velocity;
+            }
+        }
+        alignVector /= objects.Count - 1;
+
+        // Se podria normalizar alignVector
+        alignVector *= randomVelocities[id];
+        Vector3 steeringForce = alignVector - data[id].velocity;
+        // Se podria normalizar steeringForce
+
+        return steeringForce;
+    }
+    public Vector3 Seek(int id, Vector3 target)
+    {
+        Vector3 desiredVelocity = target - data[id].position;
+        // Se podria normalizar desiredVelocity
+        desiredVelocity *= randomVelocities[id];
+        Vector3 steeringForce = desiredVelocity - data[id].velocity;
+        // Se podria normalizar steeringForce
+
+        return steeringForce;
     }
 
 }
