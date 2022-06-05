@@ -1408,8 +1408,8 @@ MonoBehaviour:
   - {fileID: 1202337660}
   - {fileID: 388976166}
   startTarget: {fileID: 1659491020}
-  minVelocity: 5.24
-  maxVelocity: 7.25
+  minVelocity: 6.5
+  maxVelocity: 7
   seekForce: 9
   cohesionForce: 0.5
   separationForce: 2
