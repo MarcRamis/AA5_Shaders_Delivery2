@@ -115,7 +115,7 @@ Shader "Unlit/PBR"
 #if DIRECTIONAL_LIGHT_ON
 
 				//Directional light properties
-				lightColor = _pointLightColor.xyz;
+				lightColor = _directionalLightColor.xyz;
 				lightDir = normalize(_directionalLightDir);
 
 				//Diffuse componenet
@@ -139,12 +139,12 @@ Shader "Unlit/PBR"
 				//finalColor = ambientComp;
 
 				finalColor += clamp(float4(_directionalLightIntensity * (difuseComp + brdfComp), 1), 0, 1);
-				//return float4(difuseComp, 1);
+				//return float4(fresnel, 1);
 #endif
 #if POINT_LIGHT_ON
 
 				//Point light properties
-				lightColor = _spotLightColor.xyz;
+				lightColor = _pointLightColor.xyz;
 				lightDir = _pointLightPos - i.wPos;
 				float lightDist = length(lightDir);
 				lightDir = lightDir / lightDist;
@@ -185,7 +185,7 @@ Shader "Unlit/PBR"
 				lightDir = _spotLightPos - i.wPos;
 				float lightDist2 = length(lightDir);
 				lightDir = lightDir / lightDist2;
-				attenuation = 10.0 / (1.0f + 0.09f * lightDist + 0.032f * (lightDist * lightDist));
+				attenuation = 5.0 / (1.0f + 0.09f * lightDist + 0.032f * (lightDist * lightDist));
 				//lightDir *= 4 * 3.14;
 
 				float theta = dot(lightDir, normalize(-_spotLightDir));
