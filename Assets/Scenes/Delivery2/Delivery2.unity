@@ -1400,14 +1400,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefab: {fileID: 6847176198744521095, guid: 782748edb2c475d47924995cf2949612, type: 3}
   shader: {fileID: 7200000, guid: b6657a51f459da241a6c07fe5b2fba44, type: 3}
-  numObjectsPerRow: 3
+  maxObjectsSpawn: 302
   targets:
   - {fileID: 1659491020}
   - {fileID: 1558152791}
   - {fileID: 1508051691}
   startTarget: {fileID: 1659491020}
-  minVelocity: 0.1
-  maxVelocity: 0.58
+  minVelocity: 7.25
+  maxVelocity: 8.78
 --- !u!4 &317820297
 Transform:
   m_ObjectHideFlags: 0

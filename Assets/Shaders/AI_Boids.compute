@@ -14,6 +14,7 @@ struct GameObjInf {
 	float3 velocity;
 	float3 speed;
 	float3 acceleration;
+	float3 force;
 	float3 target;
 	float3 cohesion;
 	float3 alignment;
@@ -29,11 +30,8 @@ float deltaTime;
 void CSMain(uint3 id : SV_DispatchThreadID) {
 	// TODO: insert actual code here!
 	
-	float3 currentTarget = CoolerResult[id.x].target - CoolerResult[id.x].position;
-	CoolerResult[id.x].velocity = currentTarget * CoolerResult[id.x].speed;
-	
-	//CoolerResult[id.x].acceleration = force / 1.0f; // mass 
-
-	//CoolerResult[id.x].velocity = deltaTime * CoolerResult[id.x].acceleration + CoolerResult[id.x].velocity;
+	// Euler solver
+	CoolerResult[id.x].acceleration = CoolerResult[id.x].force / 1.0f;
+	CoolerResult[id.x].velocity = deltaTime * CoolerResult[id.x].acceleration + CoolerResult[id.x].velocity;
 	CoolerResult[id.x].position = deltaTime * CoolerResult[id.x].velocity + CoolerResult[id.x].position;
 }

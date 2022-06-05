@@ -8,6 +8,7 @@ public struct GameObjectInfo
     public Vector3 velocity;
     public Vector3 speed;
     public Vector3 acceleration;
+    public Vector3 force;
     public Vector3 target;
     public Vector3 cohesion;
     public Vector3 alignment;
@@ -16,7 +17,7 @@ public struct GameObjectInfo
     {
         get
         {
-            return sizeof(float) * 3 * 8;
+            return sizeof(float) * 3 * 9;
         }
     }
 }
@@ -27,30 +28,31 @@ public class SimpleComputePersistent : MonoBehaviour
     public GameObject prefab;
     public ComputeShader shader;
 
-    public int numObjectsPerRow = 10;
+    public int maxObjectsSpawn = 68;
     List<GameObject> objects;
     ComputeBuffer dataBuffer;
     GameObjectInfo[] data;
     public Transform[] targets;
     public Transform startTarget;
-    public float minVelocity = 0.1f;
-    [Range(0.1f,10)] public float maxVelocity;
+    [Range(0.1f, 10)] public float minVelocity;
+    [Range(0.1f, 10)] public float maxVelocity;
     float[] randomVelocities;
-    
+    public float seekForce = 1.0f;
+    public float cohesionForce = 0.5f;
+    public float separationForce = 0.5f;
+    public float alignForce = 0.5f;
+
     // Start is called before the first frame update
     void Start()
     {
         //We create the objects to move
-        objects = new List<GameObject>(numObjectsPerRow * numObjectsPerRow);
-        for (int i = 0; i < numObjectsPerRow; i++)
+        objects = new List<GameObject>(maxObjectsSpawn);
+        for (int i = 0; i < maxObjectsSpawn; i++)
         {
-            for (int j = 0; j < numObjectsPerRow; j++)
-            {
-                GameObject newObj = Instantiate(prefab, transform);
-                Vector3 randomPosition = new Vector3(Random.Range(0, 3), Random.Range(0, 3), Random.Range(0, 3));
-                newObj.transform.position = transform.position + randomPosition;
-                objects.Add(newObj);
-            }
+            GameObject newObj = Instantiate(prefab, transform);
+            Vector3 randomPosition = new Vector3(Random.Range(0.0f, 3.0f), Random.Range(0.0f, 3.0f), Random.Range(0.0f, 3.0f));
+            newObj.transform.position = transform.position + randomPosition;
+            objects.Add(newObj);
         }
         //we generate the data array to pass data from CPU to GPU at the initialization, and don't release the buffer until destroy is called
 
@@ -63,6 +65,9 @@ public class SimpleComputePersistent : MonoBehaviour
             data[i].speed = Vector3.one * randomVelocities[i];
             data[i].target = startTarget.transform.position;
             data[i].position = objects[i].transform.position;
+            data[i].velocity = Vector3.zero;
+
+            data[i].force = Seek(i, data[i].target);
         }
         //We create the buffer to pass data to the GPU
         //The constructor asks for an ammount of objects for the buffer and the size of each object in bytes
@@ -92,13 +97,22 @@ public class SimpleComputePersistent : MonoBehaviour
                 data[i].target = CalculateNewTarget(data[i].target);
             }
 
+            Vector3 steeringForce = Vector3.zero;
+            steeringForce += Seek(i, data[i].target) * seekForce;
+            steeringForce += Cohesion(i) * cohesionForce;
+            steeringForce += Separation(i) * separationForce;
+            steeringForce += Alignment(i) * alignForce;
+
+            data[i].force = steeringForce;
+
+            // Update gameobjects positions
             objects[i].transform.position = data[i].position;
         }
 
         dataBuffer.SetData(data);
         //dataBuffer.Release();
     }
-
+    
     private Vector3 CalculateNewTarget(Vector3 currentTarget)
     {
         if (currentTarget == targets[targets.Length - 1].position) return targets[0].transform.position;
@@ -127,7 +141,7 @@ public class SimpleComputePersistent : MonoBehaviour
     {
         return ownPos - newPos;
     }
-    
+
     public Vector3 Cohesion(int id)
     {
         Vector3 cohesionVector = Vector3.zero;
@@ -141,11 +155,11 @@ public class SimpleComputePersistent : MonoBehaviour
         }
         cohesionVector /= objects.Count - 1;
         cohesionVector -= data[id].position;
-
-        // Se podria normalizar cohesionVector
+        
+        cohesionVector.Normalize();
         cohesionVector *= randomVelocities[id];
         Vector3 steeringForce = cohesionVector - data[id].velocity;
-        // Se podria normalizar steeringForce
+        steeringForce.Normalize();
 
         return steeringForce;
     }
@@ -162,10 +176,10 @@ public class SimpleComputePersistent : MonoBehaviour
         }
         separateVector /= objects.Count - 1;
 
-        // Se podria normalizar separateVector
+        separateVector.Normalize();
         separateVector *= randomVelocities[id];
         Vector3 steeringForce = separateVector - data[id].velocity;
-        // Se podria normalizar steeringForce
+        steeringForce.Normalize();
 
         return steeringForce;
     }
@@ -182,20 +196,20 @@ public class SimpleComputePersistent : MonoBehaviour
         }
         alignVector /= objects.Count - 1;
 
-        // Se podria normalizar alignVector
+        alignVector.Normalize();
         alignVector *= randomVelocities[id];
         Vector3 steeringForce = alignVector - data[id].velocity;
-        // Se podria normalizar steeringForce
+        steeringForce.Normalize();
 
         return steeringForce;
     }
     public Vector3 Seek(int id, Vector3 target)
     {
         Vector3 desiredVelocity = target - data[id].position;
-        // Se podria normalizar desiredVelocity
+        desiredVelocity.Normalize();
         desiredVelocity *= randomVelocities[id];
         Vector3 steeringForce = desiredVelocity - data[id].velocity;
-        // Se podria normalizar steeringForce
+        steeringForce.Normalize();
 
         return steeringForce;
     }
