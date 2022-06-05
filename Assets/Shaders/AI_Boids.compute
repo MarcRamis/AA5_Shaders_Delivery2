@@ -1,0 +1,37 @@
+// Each #kernel tells which function to compile; you can have many kernels
+//This indicates the entry point for our program (main function)
+//we can get any of the compiled kernels in c# by using the function Shader.FindKernel("kernel_name")
+#pragma kernel CSMain
+
+//Read-Write structured buffer made of float3
+//The structured buffer can be of any basic type or of a user declared struct
+RWStructuredBuffer<float3> Result;
+
+//Struct that contains a position and a velocity that we can use to create a structured buffer
+//In c# we must declare the variables in the same order (and make sure they have the same memory layout if they are composite types!!!)
+struct GameObjInf {
+	float3 position;
+	float3 velocity;
+	float3 speed;
+	float3 acceleration;
+	float3 force;
+	float3 target;
+	float3 cohesion;
+	float3 alignment;
+	float3 separation;
+};
+//StrucuredBuffer made up of our own struct objects
+RWStructuredBuffer<GameObjInf> CoolerResult;
+float deltaTime;
+
+//This specifies our thread group size
+//GPUs allow to create thread groups in multiple dimensions for easier management of 3D data calculations, in our case we will stick to 1D
+[numthreads(128, 1, 1)]
+void CSMain(uint3 id : SV_DispatchThreadID) {
+	// TODO: insert actual code here!
+	
+	// Euler solver
+	CoolerResult[id.x].acceleration = CoolerResult[id.x].force / 1.0f;
+	CoolerResult[id.x].velocity = deltaTime * CoolerResult[id.x].acceleration + CoolerResult[id.x].velocity;
+	CoolerResult[id.x].position = deltaTime * CoolerResult[id.x].velocity + CoolerResult[id.x].position;
+}
