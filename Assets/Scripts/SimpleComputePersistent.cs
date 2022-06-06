@@ -5,18 +5,20 @@ public struct GameObjectInfo
 {
     public Vector3 position;
     public Vector3 velocity;
-    public Vector3 speed;
     public Vector3 acceleration;
     public Vector3 force;
     public Vector3 target;
-    public Vector3 cohesion;
-    public Vector3 alignment;
+    public Vector3 seek;
+    public Vector3 obstacleAvoidance;
     public Vector3 separation;
+    public Vector3 alignment;
+    public float speed;
+ 
     public static int Size
     {
         get
         {
-            return sizeof(float) * 3 * 9;
+            return (sizeof(float) * 3 * 9) + sizeof(float);
         }
     }
 }
@@ -68,11 +70,12 @@ public class SimpleComputePersistent : MonoBehaviour
         for (int i = 0; i < numObjs; i++)
         {
             randomVelocities[i] = Random.Range(minVelocity, maxVelocity);
-            data[i].speed = Vector3.one * randomVelocities[i];
+            data[i].speed = randomVelocities[i];
             data[i].target = startTarget.transform.position;
-            data[i].position = objects[i].transform.position;
             data[i].velocity = Vector3.zero;
-            data[i].force = Seek(i, data[i].target);
+            data[i].force = Vector3.zero;
+            data[i].position = objects[i].transform.position;
+            //data[i].force = Seek(i, data[i].target);
         }
         //We create the buffer to pass data to the GPU
         //The constructor asks for an ammount of objects for the buffer and the size of each object in bytes
@@ -83,12 +86,19 @@ public class SimpleComputePersistent : MonoBehaviour
 
     // Update is called once per frame
     void Update()
-    {
+    {   
         //we generate the data array to pass data from CPU to GPU
         int numObjs = objects.Count;
         int kernelHandle = shader.FindKernel("CSMain");
         shader.SetBuffer(kernelHandle, "CoolerResult", dataBuffer);
         shader.SetFloat("deltaTime", Time.deltaTime);
+        shader.SetInt("numobjs", numObjs);
+        shader.SetFloat("seekForce", seekForce);
+        shader.SetFloat("cohesionForce", cohesionForce);
+        shader.SetFloat("separateForce", separationForce);
+        shader.SetFloat("alignForce", alignForce);
+        shader.SetFloat("obstacleAvoidanceForce", obstacleAvoidanceForce);
+        shader.SetFloat("neighbourRadius", neighbourRadius);
 
         int threadGroups = Mathf.CeilToInt(numObjs / 128.0f);
 
@@ -101,24 +111,20 @@ public class SimpleComputePersistent : MonoBehaviour
             {
                 data[i].target = CalculateNewTarget(data[i].target);
             }
-
-            Vector3 steeringForce = Vector3.zero;
-            steeringForce += Seek(i, data[i].target) * seekForce;
-            steeringForce += Cohesion(i) * cohesionForce;
-            steeringForce += Separation(i) * separationForce;
-            steeringForce += Alignment(i) * alignForce;
-            steeringForce += ObstacleAvoidance(i) * obstacleAvoidanceForce;
-
-            data[i].force = steeringForce;
+            
+            data[i].separation = Separation(i);
+            data[i].alignment = Alignment(i);
+            data[i].obstacleAvoidance = ObstacleAvoidance(i);
 
             // Update gameobjects 
             objects[i].transform.position = data[i].position;
             Quaternion orientation = Quaternion.LookRotation(data[i].velocity, Vector3.up);
             objects[i].transform.rotation = Quaternion.RotateTowards(objects[i].transform.rotation, orientation, rotationSpeed * Time.deltaTime);
-        }
 
+            Debug.Log(data[i].separation);
+        }
+        
         dataBuffer.SetData(data);
-        //dataBuffer.Release();
     }
 
     private Vector3 CalculateNewTarget(Vector3 currentTarget)
@@ -215,7 +221,7 @@ public class SimpleComputePersistent : MonoBehaviour
     {
         Vector3 desiredVelocity = target - data[id].position;
         desiredVelocity.Normalize();
-        desiredVelocity *= randomVelocities[id];
+        desiredVelocity *= data[id].speed;
         Vector3 steeringForce = desiredVelocity - data[id].velocity;
         steeringForce.Normalize();
 
