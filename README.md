@@ -15,7 +15,7 @@ Ubicación en escena: los objetos se llaman "PostPro" y dentro de Post-Process_V
 Como probar la implementación:
 
 - Desactivar o activar los post-process en el post-process global que hay en escena, "PostPro". 
-- Meter la cámara en el agua para probar el post-process Water.
+- Meter la cámara en el agua para probar el post-process "Water" o cambiar el post-process a global.
 
 Bloom: Hemos implementado en varios pases el proceso de dicha técnica de post-process, primero buscamos las zonas más brillantes, luego saturamos esos pixeles más brillantes, después se aplica el bur en horizontal y en vertical y finalmente se aplica la imagen del bloom modificada sobre la original de aquellos pixeles que son más brillantes. (Funciona con nuestro PBR shader)
 
@@ -57,7 +57,9 @@ Ubcación en escena: El objeto de la escena con el material que contiene este sh
 	- Rogue exercise
 
 Implement multiple light handling & spotlight: Para hacer que el shader de PBR sea capaz de mostrar más de una luz de un mismo tipo, le pasamos desde el script un array con los datos necesarios para que las pueda calcular y en el shader pasa por un for donde va sumando el resultado de cada luz al resultado final. Para crear la spotlight calculamos el cono de luz que tendría que dar a traves de su posición, su dirección y el angulo de apuertura que tiene como máximo.
+
 Ubicación en proyecto: Nuestro PBR se encuentra en Assets/Shaders/PBR, mientras que los materiales usados para la escena están en Assets/Materials/... (con nombres similares a PBR-Flag). El código que gestiona el PBR se encuentra en Assets/Scripts/Light_PBR.
+
 Ubicación en escena: Todas las luces pueden encontrarse en un objeto llamado "Lights". El código que controla el PBR se encuentra dentro del gameObject Lights.
 
 -------
