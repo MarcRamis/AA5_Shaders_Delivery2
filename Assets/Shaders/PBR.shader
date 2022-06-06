@@ -241,15 +241,18 @@ Shader "Unlit/PBR"
 			#pragma fragment frag
 			#pragma multi_compile_shadowcaster
 			#include "UnityCG.cginc"
+			#include "AutoLight.cginc"
 
 			struct v2f {
 				V2F_SHADOW_CASTER;
+				SHADOW_COORDS(1)
 			};
 
 			v2f vert(appdata_base v)
 			{
 				v2f o;
-				TRANSFER_SHADOW_CASTER_NORMALOFFSET(o)
+				TRANSFER_SHADOW(o)
+				LIGHT_ATTENUATION(o)
 				return o;
 			}
 
