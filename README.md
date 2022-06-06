@@ -5,7 +5,7 @@ Alex Alcaide Arroyes & Marc Ramis Caldes
 
 Ejercicios seleccionados: 
 
-	- Post processing
+## Post processing
 
 Vignetting/Blur/Pixelate: Hemos implementado todos los post-process, pero a los post-process que le hemos dado un significado ha sido al Vignette y al Blur al adentrarse en el agua, simulando la visión borrosa que ocurre cuando miras debajo del agua con una mezcla de un vignette azul celeste.
 
