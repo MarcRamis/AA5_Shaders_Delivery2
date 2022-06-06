@@ -26,7 +26,7 @@ Ubicación en escena: La bola que gira alrededor de la isla, que tiene un materi
 
 ## Shader in Unity
 
-###### Adding features to our PBR shader 
+### Adding features to our PBR shader 
 Hemos implementado en un segundo pase las sombras de nuestro PBR pero solo se visualizan en los objetos de Unity.
 
 Ubicación en proyecto: Nuestro PBR se encuentra en Assets/Shaders/PBR, a partir de la linea 251.
@@ -35,14 +35,14 @@ Como probar la implementación:
 
 - En la escena hay un plano de unity disabled llamado "Plane-TestShadows", si se activa se verán las sombras.
 
-###### Create materials for the whole scene using your material 
+### Create materials for the whole scene using your material 
 Todas los objetos de la escena excepto aquellos en los que específicamos que son texturas o materiales de Unity contienen los materiales de nuestro PBR con diferentes valores en sus propiedades.
 
 Ubicación en proyecto: Nuestro PBR se encuentra en Assets/Shaders/PBR, mientras que los materiales usados para la escena están en Assets/Materials/... (con nombres similares a PBR-Flag). El código que gestiona el PBR se encuentra en Assets/Scripts/Light_PBR.
 
 ## Compute Shaders
 
-###### Boids Implementation 
+### Boids Implementation 
 En esta simulación hemos decidido generar un grupo de boids que sigan un camino de puntos predefinidos esquivando los obstáculos. Los cálculos de dicha implementación se realizan parcialmente en el geometry shader y en unity, parcialmente porque hemos tenido errores de NaN que no hemos acabado solucionando y al final lo que hemos decidido hacer es realizar algunos cálculos de comportamientos en Unity y pasar el resultado de dicho comportamiento al geometry shader dónde se acabarían sumando todas las fuerzas.
 
 Ubicación en proyecto: El Geometry shader se encuentra en Assets/Shaders/AI_Boids, mientras que el gestor del shader se encuentra en Assets/Scripts/SimpleComputePersistent.
@@ -63,7 +63,7 @@ Como probar la implementación:
 
 ## Additional Implementations
 
-###### Triplanar textures
+### Triplanar textures
 Hemos creado un shader que mezcla dos texturas y según un valor de smoothness que puede modificarse en el material se ve predominante una o la otra textura.
 
 Ubicación en proyecto: El shader puede encontrarse en la carpeta Assets/Shaders/Triplanar, el material en Assets/Materials/Triplanar_RockGrass.
@@ -71,7 +71,7 @@ Ubcación en escena: El objeto de la escena con el material que contiene este sh
 
 ## Rogue exercise
 
-###### Implement multiple light handling & spotlight 
+### Implement multiple light handling & spotlight 
 Para hacer que el shader de PBR sea capaz de mostrar más de una luz de un mismo tipo, le pasamos desde el script un array con los datos necesarios para que las pueda calcular y en el shader pasa por un for donde va sumando el resultado de cada luz al resultado final. Para crear la spotlight calculamos el cono de luz que tendría que dar a traves de su posición, su dirección y el angulo de apuertura que tiene como máximo.
 
 Ubicación en proyecto: Nuestro PBR se encuentra en Assets/Shaders/PBR, mientras que los materiales usados para la escena están en Assets/Materials/... (con nombres similares a PBR-Flag). El código que gestiona el PBR se encuentra en Assets/Scripts/Light_PBR.
