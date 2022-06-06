@@ -7,7 +7,7 @@ Alex Alcaide Arroyes & Marc Ramis Caldes
 
 ## Post processing
 
-###### Vignetting/Blur/Pixelate 
+### Vignetting/Blur/Pixelate 
 Hemos implementado todos los post-process, pero a los post-process que le hemos dado un significado ha sido al Vignette y al Blur al adentrarse en el agua, simulando la visión borrosa que ocurre cuando miras debajo del agua con una mezcla de un vignette azul celeste.
 
 Ubicación en proyecto: Todos los gestores de Post-process se encuentran en Assets/Scripts/... (con nombres similares a CustomBlurSettings), mientras que los shaders de dichos post-process se encuentran en Assets/Shaders/... (con nombres similares a CustomBlur).
@@ -18,7 +18,7 @@ Como probar la implementación:
 - Desactivar o activar los post-process en el post-process global que hay en escena, "PostPro". 
 - Meter la cámara en el agua para probar el post-process "Water" o cambiar el post-process a global.
 
-###### Bloom 
+### Bloom 
 Hemos implementado en varios pases el proceso de dicha técnica de post-process, primero buscamos las zonas más brillantes, luego saturamos esos pixeles más brillantes, después se aplica el bur en horizontal y en vertical y finalmente se aplica la imagen del bloom modificada sobre la original de aquellos pixeles que son más brillantes. (Funciona con nuestro PBR shader)
 
 Ubicación en proyecto: El shader se encuentra en Assets/Shader/Custom_Bloom. El gestor del shader Assets/Scripts/CustomBloomSettings.
