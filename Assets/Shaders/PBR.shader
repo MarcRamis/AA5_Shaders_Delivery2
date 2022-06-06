@@ -34,6 +34,7 @@ Shader "Unlit/PBR"
 		Pass
 		{
 			CGPROGRAM
+
 			#pragma vertex vert
 			#pragma fragment frag
 			#pragma multi_compile __ POINT_LIGHT_ON 
@@ -75,18 +76,31 @@ Shader "Unlit/PBR"
 			float _diffuseInt;
 			float _scecularExp;
 
+			//POINT_LIGHT
 			float4 _pointLightPos;
 			float4 _pointLightColor;
 			float _pointLightIntensity;
+			int _pointSize;
+			float4 _pointLightPositions[10];
+			float4 _pointLightColors[10];
 
+			//DIRECTIONAL_LIGHT
 			float4 _directionalLightDir;
 			float4 _directionalLightColor;
 			float _directionalLightIntensity;
+			int _directionalSize;
+			float4 _directionalLightColors[2];
+			float4 _directionalLightDirections[2];
 
+			//SPOT_LIGHT
 			float4 _spotLightPos;
 			float4 _spotLightColor;
 			float _spotLightIntensity;
 			float4 _spotLightDir;
+			int _spotSize;
+			float4 _spotLightPositions[10];
+			float4 _spotLightColors[10];
+			float4 _spotLightDirections[10];
 
 			float _fresnelIntensity;
 			float _roughness;
@@ -114,88 +128,15 @@ Shader "Unlit/PBR"
 				float k;
 #if DIRECTIONAL_LIGHT_ON
 
-				//Directional light properties
-				lightColor = _directionalLightColor.xyz;
-				lightDir = normalize(_directionalLightDir);
-
-				//Diffuse componenet
-				difuseComp = lightColor * _diffuseInt * clamp(dot(lightDir, i.worldNormal),0,1);
-
-				// View vector & half vector
-				viewVec = normalize(_WorldSpaceCameraPos - i.wPos);
-				halfVec = normalize(viewVec + lightDir);
-
-				// Fresnel Schlick
-				fresnel = _fresnelIntensity + (1 - _fresnelIntensity) * pow(1 - dot(halfVec, lightDir),5);
-
-				//Distribution GGX
-				distribution = (pow(_roughness, 2)) / (PI * (pow(pow(dot(normalize(i.worldNormal), halfVec), 2) * (pow(_roughness, 2) - 1) + 1, 2)));
-
-				// Geometry Implicit
-				geometry = (dot(normalize(i.worldNormal), lightDir)) * (dot(normalize(i.worldNormal), viewVec)) * _geometryCofficient;
-
-				brdfComp = (fresnel * geometry * distribution) / (4 * ((dot(i.worldNormal, lightDir)) * (dot(i.worldNormal, viewVec))));
-
-				//finalColor = ambientComp;
-
-				finalColor += clamp(float4(_directionalLightIntensity * (difuseComp + brdfComp), 1), 0, 1);
-				//return float4(fresnel, 1);
-#endif
-#if POINT_LIGHT_ON
-
-				//Point light properties
-				lightColor = _pointLightColor.xyz;
-				lightDir = _pointLightPos - i.wPos;
-				float lightDist = length(lightDir);
-				lightDir = lightDir / lightDist;
-				float attenuation = 1.0 / (1.0f + 0.09f * lightDist + 0.032f * (lightDist * lightDist));
-				//lightDir *= 4 * 3.14;
-
-				//Diffuse componenet
-				difuseComp = lightColor * _diffuseInt * clamp(dot(lightDir, i.worldNormal), 0, 1) / lightDist;
-				difuseComp *= attenuation;
-
-				// View vector & half vector
-				viewVec = normalize(_WorldSpaceCameraPos - i.wPos);
-				halfVec = normalize(viewVec + lightDir);
-
-				// Fresnel Schlick
-				fresnel = _fresnelIntensity + (1 - _fresnelIntensity) * pow(1 - dot(halfVec, lightDir), 5);
-
-				//Distribution GGX
-				distribution = (pow(_roughness, 2)) / (PI * (pow(pow(dot(normalize(i.worldNormal), halfVec), 2) * (pow(_roughness, 2) - 1) + 1, 2)));
-
-				// Geometry Implicit
-				geometry = (dot(normalize(i.worldNormal),lightDir)) * (dot(normalize(i.worldNormal), viewVec)) * _geometryCofficient;
-
-				// BRDF Function
-				brdfComp = (fresnel * geometry * distribution) / 4 * ((dot(i.worldNormal, lightDir)) * (dot(i.worldNormal, viewVec))) / lightDist;
-
-				brdfComp *= attenuation;
-				//finalColor = ambientComp * attenuation;
-
-				finalColor += clamp(float4(_pointLightIntensity * (difuseComp + brdfComp),1), 0, 1);
-				//return float4(distribution, 1);
-
-#endif
-#if SPOT_LIGHT_ON
-
-				//Point light properties
-				lightColor = _spotLightColor.xyz;
-				lightDir = _spotLightPos - i.wPos;
-				float lightDist2 = length(lightDir);
-				lightDir = lightDir / lightDist2;
-				attenuation = 5.0 / (1.0f + 0.09f * lightDist + 0.032f * (lightDist * lightDist));
-				//lightDir *= 4 * 3.14;
-
-				float theta = dot(lightDir, normalize(-_spotLightDir));
-
-				if (theta < cos(14.5f))
+				for (int j = 0; j < _directionalSize; j++)
 				{
-					// do lighting calculations
+					//Directional light properties
+					lightColor = _directionalLightColors[j].xyz;
+					lightDir = normalize(_directionalLightDirections[j]);
+
 					//Diffuse componenet
-					difuseComp = lightColor * _diffuseInt * clamp(dot(lightDir, i.worldNormal), 0, 1) / lightDist2;
-					difuseComp *= attenuation;
+					difuseComp = lightColor * _diffuseInt * clamp(dot(lightDir, i.worldNormal), 0, 1);
+
 					// View vector & half vector
 					viewVec = normalize(_WorldSpaceCameraPos - i.wPos);
 					halfVec = normalize(viewVec + lightDir);
@@ -209,22 +150,100 @@ Shader "Unlit/PBR"
 					// Geometry Implicit
 					geometry = (dot(normalize(i.worldNormal), lightDir)) * (dot(normalize(i.worldNormal), viewVec)) * _geometryCofficient;
 
-					// BRDF Function
-					brdfComp = (fresnel * geometry * distribution) / 4 * ((dot(i.worldNormal, lightDir)) * (dot(i.worldNormal, viewVec))) / lightDist2;
-					brdfComp *= attenuation;
+					brdfComp = (fresnel * geometry * distribution) / (4 * ((dot(i.worldNormal, lightDir)) * (dot(i.worldNormal, viewVec))));
+
 					//finalColor = ambientComp;
 
-					finalColor += clamp(float4(_spotLightIntensity * (difuseComp + brdfComp), 1), 0, 1);
+					finalColor += clamp(float4(_directionalLightIntensity * (difuseComp + brdfComp), 1), 0, 1);
+
 				}
-				else
+#endif
+#if POINT_LIGHT_ON
+
+				for (int j = 0; j < _pointSize; j++)
 				{
-					//return _objectColor;
+					//Point light properties
+					lightColor = _pointLightColors[j].xyz;
+					lightDir = _pointLightPositions[j] - i.wPos;
+					float lightDist = length(lightDir);
+					lightDir = lightDir / lightDist;
+					float attenuation = 1.0 / (1.0f + 0.09f * lightDist + 0.032f * (lightDist * lightDist));
+					//lightDir *= 4 * 3.14;
+				
+					//Diffuse componenet
+					difuseComp = lightColor * _diffuseInt * clamp(dot(lightDir, i.worldNormal), 0, 1) / lightDist;
+					difuseComp *= attenuation;
+				
+					// View vector & half vector
+					viewVec = normalize(_WorldSpaceCameraPos - i.wPos);
+					halfVec = normalize(viewVec + lightDir);
+				
+					// Fresnel Schlick
+					fresnel = _fresnelIntensity + (1 - _fresnelIntensity) * pow(1 - dot(halfVec, lightDir), 5);
+				
+					//Distribution GGX
+					distribution = (pow(_roughness, 2)) / (PI * (pow(pow(dot(normalize(i.worldNormal), halfVec), 2) * (pow(_roughness, 2) - 1) + 1, 2)));
+				
+					// Geometry Implicit
+					geometry = (dot(normalize(i.worldNormal), lightDir)) * (dot(normalize(i.worldNormal), viewVec)) * _geometryCofficient;
+				
+					// BRDF Function
+					brdfComp = (fresnel * geometry * distribution) / 4 * ((dot(i.worldNormal, lightDir)) * (dot(i.worldNormal, viewVec))) / lightDist;
+				
+					brdfComp *= attenuation;
+				
+					finalColor += clamp(float4(_pointLightIntensity * (difuseComp + brdfComp), 1), 0, 1);
+
 				}
-				
-				
 				
 
+#endif
+#if SPOT_LIGHT_ON
+				for (int j = 0; j < _spotSize; j++)
+				{
+					//Spot light properties
+					lightColor = _spotLightColors[j].xyz;
+					lightDir = _spotLightPositions[j] - i.wPos;
+					float lightDist2 = length(lightDir);
+					lightDir = lightDir / lightDist2;
+					float attenuation = 1.0 / (1.0f + 0.09f * lightDist2 + 0.032f * (lightDist2 * lightDist2));
+					//lightDir *= 4 * 3.14;
 				
+					float theta = dot(lightDir, normalize(-_spotLightDirections[j]));
+				
+					if (theta < cos(14.5f))
+					{
+						// do lighting calculations
+						//Diffuse componenet
+						difuseComp = lightColor * _diffuseInt * clamp(dot(lightDir, i.worldNormal), 0, 1) / lightDist2;
+						difuseComp *= attenuation;
+						// View vector & half vector
+						viewVec = normalize(_WorldSpaceCameraPos - i.wPos);
+						halfVec = normalize(viewVec + lightDir);
+				
+						// Fresnel Schlick
+						fresnel = _fresnelIntensity + (1 - _fresnelIntensity) * pow(1 - dot(halfVec, lightDir), 5);
+				
+						//Distribution GGX
+						distribution = (pow(_roughness, 2)) / (PI * (pow(pow(dot(normalize(i.worldNormal), halfVec), 2) * (pow(_roughness, 2) - 1) + 1, 2)));
+				
+						// Geometry Implicit
+						geometry = (dot(normalize(i.worldNormal), lightDir)) * (dot(normalize(i.worldNormal), viewVec)) * _geometryCofficient;
+				
+						// BRDF Function
+						brdfComp = (fresnel * geometry * distribution) / 4 * ((dot(i.worldNormal, lightDir)) * (dot(i.worldNormal, viewVec))) / lightDist2;
+						brdfComp *= attenuation;
+						//finalColor = ambientComp;
+				
+						finalColor += clamp(float4(_spotLightIntensity * (difuseComp + brdfComp), 1), 0, 1);
+					}
+					else
+					{
+						//return _objectColor;
+					}
+				}
+				
+								
 
 #endif
 
@@ -232,32 +251,32 @@ Shader "Unlit/PBR"
 			}
 			ENDCG
 		}
-		Pass
-		{
-			Tags {"LightMode" = "ShadowCaster"}
-
-			CGPROGRAM
-			#pragma vertex vert
-			#pragma fragment frag
-			#pragma multi_compile_shadowcaster
-			#include "UnityCG.cginc"
-
-			struct v2f {
-				V2F_SHADOW_CASTER;
-			};
-
-			v2f vert(appdata_base v)
-			{
-				v2f o;
-				TRANSFER_SHADOW_CASTER_NORMALOFFSET(o)
-				return o;
-			}
-
-			float4 frag(v2f i) : SV_Target
-			{
-				SHADOW_CASTER_FRAGMENT(i)
-			}
-			ENDCG
-		}
+		//Pass
+		//{
+		//	Tags {"LightMode" = "ShadowCaster"}
+		//
+		//	CGPROGRAM
+		//	#pragma vertex vert
+		//	#pragma fragment frag
+		//	#pragma multi_compile_shadowcaster
+		//	#include "UnityCG.cginc"
+		//
+		//	struct v2f {
+		//		V2F_SHADOW_CASTER;
+		//	};
+		//
+		//	v2f vert(appdata_base v)
+		//	{
+		//		v2f o;
+		//		TRANSFER_SHADOW_CASTER_NORMALOFFSET(o)
+		//		return o;
+		//	}
+		//
+		//	float4 frag(v2f i) : SV_Target
+		//	{
+		//		SHADOW_CASTER_FRAGMENT(i)
+		//	}
+		//	ENDCG
+		//}
 	}
 }

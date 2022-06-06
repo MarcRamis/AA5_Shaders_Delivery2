@@ -74,20 +74,20 @@ Material:
     - _ZWrite: 1
     - _ambientInt: 0.25
     - _diffuseInt: 1
-    - _directionalLightIntensity: 1
+    - _directionalLightIntensity: 0.6
     - _fresnelIntensity: 0.14
     - _geometryCofficient: 1
     - _pointLightIntensity: 1
     - _roughness: 0.94
     - _scecularExp: 2
-    - _spotLightIntensity: 0.5
+    - _spotLightIntensity: 5
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _ambientColor: {r: 1, g: 1, b: 1, a: 1}
     - _directionalLightColor: {r: 1, g: 0.8666667, b: 0.7411765, a: 1}
     - _directionalLightDir: {r: -0.26775655, g: 0.88965565, b: -0.36989102, a: 0}
-    - _objectColor: {r: 0, g: 0.5, b: 0.078213215, a: 1}
+    - _objectColor: {r: 0.007640951, g: 0.23584908, b: 0, a: 1}
     - _pointLightColor: {r: 1, g: 1, b: 1, a: 0}
     - _pointLightPos: {r: -13.749349, g: 4.775643, b: 0.41789246, a: 0}
     - _spotLightColor: {r: 1, g: 1, b: 1, a: 1}
