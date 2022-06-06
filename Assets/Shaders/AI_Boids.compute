@@ -12,25 +12,127 @@ RWStructuredBuffer<float3> Result;
 struct GameObjInf {
 	float3 position;
 	float3 velocity;
-	float3 speed;
 	float3 acceleration;
 	float3 force;
 	float3 target;
-	float3 cohesion;
-	float3 alignment;
+	float3 seek;
+	float3 obstacleAvoidance;
 	float3 separation;
+	float3 alignment;
+	float speed;
 };
+
 //StrucuredBuffer made up of our own struct objects
 RWStructuredBuffer<GameObjInf> CoolerResult;
 float deltaTime;
+int numObjs;
+float seekForce;
+float cohesionForce;
+float separateForce;
+float alignForce;
+float obstacleAvoidanceForce;
+float neighbourRadius;
+
+float3 Cohesion(int id)
+{
+	float3 cohesionVector = (0, 0, 0);
+	int neighboursSize = 0;
+
+	for (int i = 0; i < numObjs; i++)
+	{
+		if (i != id)
+		{	
+			//float dist = length(CoolerResult[id].position.xyz - CoolerResult[i].position.xyz);
+			//if (dist < neighbourRadius)
+			//{
+			//	
+			//	neighboursSize++;
+			//}
+			cohesionVector += CoolerResult[i].position;
+		}
+	}
+
+	cohesionVector /= numObjs - 1;
+	cohesionVector -= CoolerResult[id].position;
+
+	cohesionVector = normalize(cohesionVector);
+	cohesionVector *= CoolerResult[id].speed;
+	float3 steeringForce = cohesionVector - CoolerResult[id].velocity;
+	steeringForce = normalize(steeringForce);
+	
+	return steeringForce;
+}
+
+float3 Separation(int id)
+{
+	float3 separateVector = (0, 0, 0);
+
+	for (int i = 0; i < numObjs; i++)
+	{
+		if (i != id)
+		{
+			separateVector += CoolerResult[id].position - CoolerResult[i].position;
+		}
+	}
+
+	separateVector /= numObjs - 1;
+	separateVector = normalize(separateVector);
+	separateVector *= CoolerResult[id].speed;
+	float3 steeringForce = separateVector - CoolerResult[id].velocity;
+	steeringForce = normalize(steeringForce);
+
+	return steeringForce;
+}
+
+float3 Alignment(int id)
+{
+	float3 alignVector = (0,0,0);
+
+	for (int i = 0; i < numObjs; i++)
+	{
+		if (i != id)
+		{
+			alignVector += CoolerResult[i].velocity;
+		}
+	}
+
+	alignVector /= numObjs - 1;	
+	alignVector = normalize(alignVector);
+	alignVector *= CoolerResult[id].speed;
+	float3 steeringForce = alignVector - CoolerResult[id].velocity;
+	steeringForce = normalize(steeringForce);
+
+	return steeringForce;
+}
+
+float3 Seek(int id, float3 target)
+{
+	float3 desiredVelocity = target - CoolerResult[id].position;
+	desiredVelocity = normalize(desiredVelocity);
+	desiredVelocity *= CoolerResult[id].speed;
+	float3 steeringForce = desiredVelocity - CoolerResult[id].velocity;
+	steeringForce = normalize(steeringForce);
+
+	return steeringForce;
+}
 
 //This specifies our thread group size
 //GPUs allow to create thread groups in multiple dimensions for easier management of 3D data calculations, in our case we will stick to 1D
 [numthreads(128, 1, 1)]
 void CSMain(uint3 id : SV_DispatchThreadID) {
 	// TODO: insert actual code here!
-	
-	// Euler solver
+
+	// Forces
+	float3 steeringForce = (0, 0, 0);
+	steeringForce += Seek(id.x, CoolerResult[id.x].target) * seekForce;
+	steeringForce += Cohesion(id.x) * cohesionForce;
+	steeringForce += CoolerResult[id.x].separation * separateForce;
+	steeringForce += CoolerResult[id.x].alignment * alignForce;
+	steeringForce += CoolerResult[id.x].obstacleAvoidance * obstacleAvoidanceForce;
+
+	CoolerResult[id.x].force = steeringForce;
+
+	// Euler solver - Motion
 	CoolerResult[id.x].acceleration = CoolerResult[id.x].force / 1.0f;
 	CoolerResult[id.x].velocity = deltaTime * CoolerResult[id.x].acceleration + CoolerResult[id.x].velocity;
 	CoolerResult[id.x].position = deltaTime * CoolerResult[id.x].velocity + CoolerResult[id.x].position;
