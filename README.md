@@ -24,6 +24,14 @@ Ubicación en escena: La bola que gira alrededor de la isla, que tiene un materi
 
 	- Shader in Unity
 
+Adding features to our PBR shader: Hemos implementado en un segundo pase las sombras de nuestro PBR pero solo se visualizan en los objetos de Unity.
+
+Ubicación en proyecto: Nuestro PBR se encuentra en Assets/Shaders/PBR, a partir de la linea 251.
+
+Como probar la implementación:
+
+- En la escena hay un plano de unity disabled llamado "Plane-TestShadows", si se activa se verán las sombras.
+
 Create materials for the whole scene using your material: Todas los objetos de la escena excepto aquellos en los que específicamos que son texturas o materiales de Unity contienen los materiales de nuestro PBR con diferentes valores en sus propiedades.
 
 Ubicación en proyecto: Nuestro PBR se encuentra en Assets/Shaders/PBR, mientras que los materiales usados para la escena están en Assets/Materials/... (con nombres similares a PBR-Flag). El código que gestiona el PBR se encuentra en Assets/Scripts/Light_PBR.

@@ -40,7 +40,9 @@ Shader "Unlit/PBR"
 			#pragma multi_compile __ POINT_LIGHT_ON 
 			#pragma multi_compile __ DIRECTIONAL_LIGHT_ON
 			#pragma multi_compile __ SPOT_LIGHT_ON
+			//#pragma multi_compile_fwdadd_fullshadows
 			#include "UnityCG.cginc"
+			#include "AutoLight.cginc"
 
 			struct appdata
 			{
@@ -62,7 +64,6 @@ Shader "Unlit/PBR"
 			{
 				v2f o;
 				o.vertex = UnityObjectToClipPos(v.vertex);
-				//o.uv = TRANSFORM_TEX(v.uv, _MainTex);
 				o.uv = v.uv;
 				o.worldNormal = UnityObjectToWorldNormal(v.normal);
 				o.wPos = mul(unity_ObjectToWorld, v.vertex).xyz;
@@ -126,6 +127,7 @@ Shader "Unlit/PBR"
 				float3 lightDir;
 				float _sqrt;
 				float k;
+
 #if DIRECTIONAL_LIGHT_ON
 
 				for (int j = 0; j < _directionalSize; j++)
@@ -155,7 +157,6 @@ Shader "Unlit/PBR"
 					//finalColor = ambientComp;
 
 					finalColor += clamp(float4(_directionalLightIntensity * (difuseComp + brdfComp), 1), 0, 1);
-
 				}
 #endif
 #if POINT_LIGHT_ON
@@ -243,36 +244,36 @@ Shader "Unlit/PBR"
 
 #endif
 
-				return finalColor * _objectColor;
+				return (finalColor * _objectColor);
 			}
 			ENDCG
 		}
-		//Pass
-		//{
-		//	Tags {"LightMode" = "ShadowCaster"}
-		//
-		//	CGPROGRAM
-		//	#pragma vertex vert
-		//	#pragma fragment frag
-		//	#pragma multi_compile_shadowcaster
-		//	#include "UnityCG.cginc"
-		//
-		//	struct v2f {
-		//		V2F_SHADOW_CASTER;
-		//	};
-		//
-		//	v2f vert(appdata_base v)
-		//	{
-		//		v2f o;
-		//		TRANSFER_SHADOW_CASTER_NORMALOFFSET(o)
-		//		return o;
-		//	}
-		//
-		//	float4 frag(v2f i) : SV_Target
-		//	{
-		//		SHADOW_CASTER_FRAGMENT(i)
-		//	}
-		//	ENDCG
-		//}
+		Pass
+		{
+			Tags {"LightMode" = "ShadowCaster"}
+
+			CGPROGRAM
+			#pragma vertex vert
+			#pragma fragment frag
+			#pragma multi_compile_shadowcaster
+			#include "UnityCG.cginc"
+
+			struct v2f {
+				V2F_SHADOW_CASTER;
+			};
+
+			v2f vert(appdata_base v)
+			{
+				v2f o;
+				TRANSFER_SHADOW_CASTER_NORMALOFFSET(o)
+				return o;
+			}
+
+			float4 frag(v2f i) : SV_Target
+			{
+				SHADOW_CASTER_FRAGMENT(i)
+			}
+			ENDCG
+		}
 	}
 }
