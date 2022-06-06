@@ -237,10 +237,6 @@ Shader "Unlit/PBR"
 				
 						finalColor += clamp(float4(_spotLightIntensity * (difuseComp + brdfComp), 1), 0, 1);
 					}
-					else
-					{
-						//return _objectColor;
-					}
 				}
 				
 								
