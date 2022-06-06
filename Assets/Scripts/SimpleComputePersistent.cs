@@ -120,8 +120,6 @@ public class SimpleComputePersistent : MonoBehaviour
             objects[i].transform.position = data[i].position;
             Quaternion orientation = Quaternion.LookRotation(data[i].velocity, Vector3.up);
             objects[i].transform.rotation = Quaternion.RotateTowards(objects[i].transform.rotation, orientation, rotationSpeed * Time.deltaTime);
-
-            Debug.Log(data[i].separation);
         }
         
         dataBuffer.SetData(data);
